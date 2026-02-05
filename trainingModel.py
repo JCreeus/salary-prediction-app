@@ -75,7 +75,7 @@ y = df["Salary"]
 # --- CONFIGURACIÓN DEL RANDOM FOREST ---
 # n_estimators=200: Usamos 200 árboles.
 # max_depth=10: Evita que el modelo se memorice casos raros.
-regressor = RandomForestRegressor(n_estimators=200, max_depth=10, random_state=0)
+regressor = RandomForestRegressor(n_estimators=200, max_depth=8, min_samples_leaf=5, random_state=0)
 regressor.fit(X, y)
 
 # GUARDAR
