@@ -1,0 +1,2 @@
+activar venv --> source env/bin/activate
+abrir pagina web --> streamlit run app.py
