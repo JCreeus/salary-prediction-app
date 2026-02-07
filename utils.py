@@ -1,78 +1,74 @@
-# Diccionario (traducciones) de toda la info de la página
-
-traduccion_estudios = {
-    "Less than a Bachelors": "Sin estudios universitarios",
-    "Bachelor’s degree": "Grado Universitario",
-    "Master’s degree": "Máster / Postgrado",
-    "Post grad": "Doctorado"
-}
-
+# Diccionario de traduccion de paises
 traduccion_paises = {
-    "Spain": "España",
     "United States of America": "Estados Unidos",
-    "Germany": "Alemania",
     "United Kingdom of Great Britain and Northern Ireland": "Reino Unido",
+    "Germany": "Alemania",
     "Canada": "Canadá",
-    "France": "Francia",
     "Brazil": "Brasil",
+    "Spain": "España",
+    "France": "Francia",
+    "India": "India",
     "Italy": "Italia",
+    "Australia": "Australia",
     "Netherlands": "Países Bajos",
     "Poland": "Polonia",
     "Sweden": "Suecia",
-    "India": "India",
-    "Australia": "Australia",
-    "Other": "Otro país"
+    "Switzerland": "Suiza"
 }
 
-traduccion_roles = {
-    "AI/ML engineer": "Ingeniero de IA / Machine Learning",
-    "Academic researcher": "Investigador Académico",
-    "Applied scientist": "Científico Aplicado",
-    "Architect, software or solutions": "Arquitecto de Software / Soluciones",
-    "Cloud infrastructure engineer": "Ingeniero Cloud / Infraestructura",
-    "Cybersecurity or InfoSec professional": "Especialista en Ciberseguridad",
-    "Data engineer": "Ingeniero de Datos",
-    "Data or business analyst": "Analista de Datos / Negocio",
-    "Data scientist": "Científico de Datos",
-    "Database administrator or engineer": "Administrador de Bases de Datos",
-    "DevOps engineer or professional": "Ingeniero DevOps",
-    "Developer, AI apps or physical AI": "Desarrollador de Apps IA",
-    "Developer, back-end": "Desarrollador Back-end",
-    "Developer, desktop or enterprise applications": "Desarrollador de Escritorio / Empresarial",
-    "Developer, embedded applications or devices": "Desarrollador de Sistemas Embebidos",
-    "Developer, front-end": "Desarrollador Front-end",
-    "Developer, full-stack": "Desarrollador Full-stack",
-    "Developer, game or graphics": "Desarrollador de Videojuegos / Gráficos",
-    "Developer, mobile": "Desarrollador Móvil (iOS/Android)",
-    "Developer, QA or test": "QA / Tester / Control de Calidad",
-    "Engineering manager": "Engineering Manager (Gerente de Ingeniería)",
-    "Financial analyst or engineer": "Analista Financiero",
-    "Founder, technology or otherwise": "Fundador / Emprendedor",
-    "Investigador": "Investigador",
-    "Other (please specify):": "Otro",
-    "Product manager": "Product Manager",
-    "Project manager": "Project Manager",
-    "Retired": "Jubilado",
-    "Senior executive (C-Suite, VP, etc.)": "Directivo Ejecutivo (CEO, CTO, VP...)",
-    "Student": "Estudiante",
-    "Support engineer or analyst": "Ingeniero de Soporte Técnico",
-    "System administrator": "Administrador de Sistemas (SysAdmin)",
-    "UX, Research Ops or UI design professional": "Diseñador UI/UX",
+# Orden logico para la UI (importante para que no salga alfabetico)
+orden_estudios_logico = [
+    "Estudios menores (ej. bootcamps)",
+    "Grado Universitario",
+    "Máster",
+    "Doctorado / Postgrado"
+]
+
+def limpiar_pais(pais):
+    # Si esta en el diccionario devuelve la traduccion, si no, devuelve el original
+    return traduccion_paises.get(pais, pais)
+
+def normalizar_roles(rol):
+    rol = str(rol).lower()
     
-    # Estos estan repetidos pero pueden aparecer en el dataset con estas otras formas
-    "Administrador de Sistemas": "Administrador de Sistemas (SysAdmin)",
-    "Desarrollador Back-end": "Desarrollador Back-end",
-    "Desarrollador Front-end": "Desarrollador Front-end",
-    "Desarrollador Full-stack": "Desarrollador Full-stack",
-    "Desarrollador Móvil (iOS/Android)": "Desarrollador Móvil (iOS/Android)",
-    "Investigador": "Investigador"
-}
+    # Datos e IA
+    if 'machine learning' in rol or 'ai engineer' in rol: return 'Ingeniero de IA / Machine Learning'
+    if 'data scientist' in rol: return 'Científico de Datos'
+    if 'data engineer' in rol: return 'Ingeniero de Datos'
+    if 'data analyst' in rol or 'business analyst' in rol: return 'Analista de Datos'
+    
+    # Web
+    if 'back-end' in rol or 'backend' in rol: return 'Desarrollador Backend'
+    if 'front-end' in rol or 'frontend' in rol: return 'Desarrollador Frontend'
+    if 'full-stack' in rol or 'full stack' in rol: return 'Desarrollador Full Stack'
+    
+    # Infra
+    if 'devops' in rol or 'sre' in rol or 'cloud' in rol: return 'DevOps / Cloud Engineer'
+    if 'system admin' in rol or 'administrator' in rol: return 'SysAdmin / Sistemas'
+    
+    # Movil
+    if 'mobile' in rol or 'android' in rol or 'ios' in rol: return 'Desarrollador Móvil'
+    
+    # Management
+    if 'manager' in rol or 'lead' in rol or 'executive' in rol: return 'Engineering Manager / CTO'
+    
+    # Otros
+    if 'game' in rol: return 'Desarrollador Videojuegos'
+    if 'security' in rol: return 'Ciberseguridad'
+    if 'qa' in rol or 'test' in rol: return 'QA / Tester'
+    
+    return 'Otro'
 
-def mostrar_nombre_pais(opcion_ingles):
-    return traduccion_paises.get(opcion_ingles, opcion_ingles)
+def parse_education(x):
+    if 'Bachelor' in x: return 'Grado Universitario'
+    if 'Master' in x: return 'Máster'
+    if 'Professional' in x or 'doctoral' in x: return 'Doctorado / Postgrado'
+    return 'Estudios menores (ej. bootcamps)'
 
-def mostrar_nombre_estudios(opcion_ingles):
-    return traduccion_estudios.get(opcion_ingles, opcion_ingles)
-
-def mostrar_nombre_rol(opcion_ingles):
-    return traduccion_roles.get(opcion_ingles, opcion_ingles)
+def parse_experience(x):
+    if x == 'More than 50 years': return 50
+    if x == 'Less than 1 year': return 0.5
+    try:
+        return float(x)
+    except:
+        return 0
